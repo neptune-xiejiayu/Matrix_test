@@ -1,0 +1,9 @@
+default:
+  base_url: "http://10.100.81.151"
+  headless: false
+  implicit_wait: 5
+  window_size: "1920,1080"
+
+  login:
+    username: "admin"
+    password: "admin"
