@@ -126,7 +126,7 @@ def check_config():
 
 def main():
     """主验证函数"""
-    print("🔍 UI自动化测试框架环境验证")
+    print("UI自动化测试框架环境验证")
     print("=" * 50)
 
     system = platform.system()
@@ -144,21 +144,21 @@ def main():
 
     results = []
     for name, check_func in checks:
-        print(f"\n📋 检查{name}:")
+        print(f"\n 检查{name}:")
         result = check_func()
         results.append(result)
 
     print("\n" + "=" * 50)
     if all(results):
-        print("🎉 环境验证通过！框架可以在此环境中运行。")
+        print(" 环境验证通过！框架可以在此环境中运行。")
         if system.lower() == "linux":
-            print("💡 Linux环境建议：")
+            print(" Linux环境建议：")
             print("   - 使用 Jenkinsfile.linux 进行CI构建")
             print("   - 设置 TEST_ENV=linux 环境变量")
             print("   - 确保系统已安装必要的依赖")
         return 0
     else:
-        print("❌ 环境验证失败，请修复上述问题后再运行测试。")
+        print(" 环境验证失败，请修复上述问题后再运行测试。")
         return 1
 
 
