@@ -1,0 +1,12 @@
+class BasePage:
+    def __init__(self, driver):
+        self.driver = driver
+
+    def open(self, url):
+        self.driver.get(url)
+
+    def title(self):
+        return self.driver.title
+
+    def current_url(self):
+        return self.driver.current_url
