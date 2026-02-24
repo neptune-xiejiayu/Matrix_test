@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install') {
+            steps {
+                sh '''
+                  python3 -m pip install --upgrade pip
+                  pip install -r requirements.txt
+                  mkdir -p reports/html_reports reports/logs
+
+                  # Try installing system dependencies on Debian/Ubuntu agents (optional)
+                  if command -v apt-get >/dev/null 2>&1; then
+                    apt-get update && apt-get install -y wget unzip xvfb || true
+                  fi
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                // Run tests under Xvfb for headless browser support on CI agents
+                sh '''
+                  export TEST_ENV=ci
+                  # use xvfb-run if available to provide an X server
+                  if command -v xvfb-run >/dev/null 2>&1; then
+                    xvfb-run -s "-screen 0 1920x1080x24" pytest -q web_ui_framework --html=reports/html_reports/report.html --self-contained-html
+                  else
+                    pytest -q web_ui_framework --html=reports/html_reports/report.html --self-contained-html
+                  fi
+                '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'reports/html_reports/**', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'reports/logs/**', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

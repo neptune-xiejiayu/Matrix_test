@@ -1,0 +1,44 @@
+default:
+  base_url: "http://10.100.81.151"
+  headless: false
+  implicit_wait: 5
+  window_size: "1920,1080"
+
+  login:
+    username: "admin"
+    password: "admin"
+
+# Linux环境配置
+linux:
+  base_url: "http://10.100.81.151"
+  headless: true  # Linux环境下默认启用无头模式
+  implicit_wait: 5
+  window_size: "1920,1080"
+  chromedriver_path: ""  # 如果需要指定路径，可以在这里设置
+
+  login:
+    username: "admin"
+    password: "admin"
+
+# Windows环境配置
+windows:
+  base_url: "http://10.100.81.151"
+  headless: false
+  implicit_wait: 5
+  window_size: "1920,1080"
+  chromedriver_path: ""  # 如果需要指定路径，可以在这里设置
+
+  login:
+    username: "admin"
+    password: "admin"
+
+# CI环境配置
+ci:
+  base_url: "http://10.100.81.151"
+  headless: true
+  implicit_wait: 10
+  window_size: "1920,1080"
+
+  login:
+    username: "admin"
+    password: "admin"
