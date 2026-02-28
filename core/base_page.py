@@ -1,4 +1,5 @@
 from web_ui_framework.core.wait_manager import WaitManager
+from selenium.common.exceptions import TimeoutException
 
 
 class BasePage:
@@ -23,6 +24,21 @@ class BasePage:
 
     def current_url(self) -> str:
         return self.driver.current_url
+    
+    # Convenience wrappers used by Page Objects
+    def find_all(self, locator):
+        """返回匹配的所有元素列表（不做显式等待）。"""
+        return self.driver.find_elements(*locator)
+
+    def wait_for_url_contains(self, fragment: str, timeout: int = 10):
+        """等待 URL 包含指定片段。"""
+        try:
+            from selenium.webdriver.support.ui import WebDriverWait
+
+            WebDriverWait(self.driver, timeout).until(lambda d: fragment in d.current_url)
+            return True
+        except TimeoutException:
+            return False
 
     # --------- 通用元素操作（基于定位器元组） ---------
     def find(self, locator, timeout: int | None = None):

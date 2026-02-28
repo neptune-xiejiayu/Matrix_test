@@ -14,7 +14,8 @@ class DashboardPage(BasePage):
         return "Dashboard" in self.title()
 
     def get_welcome_text(self) -> str:
-        return self.driver.find_element(*self.welcome_banner).text
+        el = self.find(self.welcome_banner)
+        return el.text if el is not None else ""
 
     def open_user_menu(self, timeout: int = 10):
         self.click(self.user_menu, timeout=timeout)
@@ -24,7 +25,7 @@ class DashboardPage(BasePage):
         self.click(self.logout_button, timeout=timeout)
 
     def widget_count(self) -> int:
-        return len(self.driver.find_elements(*self.widgets))
+        return len(self.find_all(self.widgets))
 
     # 常用页面动作示例：用于将原测试中的 XPath 操作抽象到页面层
     navigate_button = ElementLocator.by_xpath("//div[contains(text(),'导航到站点')]")

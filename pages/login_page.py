@@ -1,6 +1,5 @@
 from web_ui_framework.core.base_page import BasePage
 from web_ui_framework.core.element_locator import ElementLocator
-from selenium.webdriver.support.ui import WebDriverWait
 
 
 class LoginPage(BasePage):
@@ -35,8 +34,8 @@ class LoginPage(BasePage):
 
     def login_and_wait_for_home(self, user: str, pwd: str, home_path: str, timeout: int = 15):
         """完整的登录操作并等待 URL 跳转到包含 `home_path` 的地址。"""
-        self.login(user, timeout=timeout, pwd=pwd)
-        WebDriverWait(self.driver, timeout).until(lambda d: home_path in d.current_url)
+        self.login(user, pwd)
+        return self.wait_for_url_contains(home_path, timeout=timeout)
 
     def get_error(self) -> str:
         els = self.driver.find_elements(*self.error_msg)

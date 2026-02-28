@@ -48,10 +48,8 @@ TEST_ENV=windows pytest -q web_ui_framework  # Windows环境
 
 ## CI 配置
 
-### GitHub Actions
-已添加工作流文件 `.github/workflows/ci.yml`，会在推送或 PR 时运行 `pytest web_ui_framework` 并上传 HTML 报告。
-
 ### Jenkins
+
 - **Windows环境**：使用 `Jenkinsfile`
 - **Linux环境**：使用 `Jenkinsfile.linux`
 
@@ -62,7 +60,7 @@ TEST_ENV=windows pytest -q web_ui_framework  # Windows环境
 - 如果 agent 没有系统级 Chrome/Chromium，你可以：
 	- 安装 `google-chrome-stable` 或 `chromium-browser` 并确保 `chromedriver` 可用，或
 	- 将 `CHROMEDRIVER_PATH` 环境变量设置为仓库中 `drivers/chromedriver/chromedriver` 的绝对路径。
-- Jenkinsfile.linux 会在 CI 运行时设置 `TEST_ENV=ci` 并尝试用 `xvfb-run` 启动测试以支持无头浏览器。
+- `Jenkinsfile.linux` 会在 CI 运行时设置 `TEST_ENV=ci` 并尝试用 `xvfb-run` 启动测试以支持无头浏览器。
 
 示例 Jenkins 全局环境变量（可选）：
 
@@ -112,6 +110,38 @@ pytest -q web_ui_framework
 ```bash
 xvfb-run -s "-screen 0 1920x1080x24" pytest -q web_ui_framework
 ```
+
+## Page Object 模式与用例编写建议
+
+本框架采用 Page Object 模式：页面定位器与操作封装在 `pages/`，测试用例只调用页面方法以保持清晰和可维护。
+
+- 在 `pages/<page>_page.py` 中声明定位器和高层动作（方法应只暴露业务行为，如 `login()`、`logout()`、`navigate_to_site()`）。
+- 在 `core/base_page.py` 中提供 `find`/`click`/`type_text` 等工具，页面对象使用这些方法以保证等待和报错一致性。
+- 测试用例示例（`tests/test_login.py`）：
+
+```python
+from web_ui_framework.pages.login_page import LoginPage
+
+def test_login_success(browser, login_credentials):
+	lp = LoginPage(browser)
+	lp.open("https://example.com")
+	lp.login_and_wait_for_home(login_credentials['username'], login_credentials['password'], "/#/homePage")
+	assert "/#/homePage" in browser.current_url
+```
+
+ 常见原则：
+- 优先使用稳定定位（`id`、`data-test`、`name`），仅在必要时使用 XPath。 
+- 把等待逻辑放到 `core` 或页面对象中，避免在测试中大量重复 `WebDriverWait`。
+- 页面对象应返回业务信息（如 `widget_count()`），而不是暴露底层 WebDriver。
+
+## 生成 HTML 报告
+
+在本地或 CI 中可通过 `pytest-html` 生成 HTML 报告并保存到 `reports/html_reports/`：
+
+```bash
+pytest web_ui_framework --html=reports/html_reports/report.html --self-contained-html
+```
+
 
 ## 其它注意事项
 
